@@ -15,3 +15,7 @@ import Navbar from './components/layout/Navbar.vue'
 import Footer from './components/layout/Footer.vue'
 import { navigation } from './data/navigation.js'
 </script>
+
+<style>
+@import './style.css';
+</style>
