@@ -14,10 +14,20 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     minify: 'esbuild',
+    // Shto këto për CSS
+    cssCodeSplit: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['vue', 'vue-router']
+        },
+        // Shto këto për assets
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/[name]-[hash][extname]'
+          }
+          return 'assets/[name]-[hash][extname]'
         }
       }
     }
@@ -28,5 +38,14 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true
+  },
+  // Shto këtë seksion të ri për CSS
+  css: {
+    devSourcemap: true,
+    preprocessorOptions: {
+      css: {
+        additionalData: `@import "./src/style.css";`
+      }
+    }
   }
 })
