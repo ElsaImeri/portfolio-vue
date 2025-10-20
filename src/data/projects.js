@@ -243,7 +243,6 @@ export const projectsData = [
     duration: "3 weeks",
     teamSize: "Solo",
     githubUrl: "https://github.com/ElsaImeri/portfolio-website",
-    demoUrl: "https://elsaimeri.com",
     image: "Portfolio.png",
     features: [
       "Responsive design for all screen sizes",

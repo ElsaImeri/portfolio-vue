@@ -89,14 +89,14 @@
                   ? 'text-white bg-cyan-500/10 border border-cyan-500/20' 
                   : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
               ]"
-              @click="navigateToSection(item.name.toLowerCase()); isMobileMenuOpen = false"
+              @click="navigateToSection(item.name.toLowerCase())"
             >
               {{ item.name }}
               <span v-if="activeSection === item.name.toLowerCase()" class="ml-2 w-2 h-2 bg-cyan-400 rounded-full"></span>
             </button>
             <button 
               class="flex items-center space-x-2 px-4 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-700/50 font-medium transition-all duration-300"
-              @click="downloadCV; isMobileMenuOpen = false">
+              @click="downloadCV">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
@@ -110,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
@@ -124,25 +124,34 @@ const scrolled = ref(false)
 const isMobileMenuOpen = ref(false)
 const activeSection = ref('home')
 
+watch(() => route.path, () => {
+  isMobileMenuOpen.value = false
+})
+
 const downloadCV = () => {
-  // Krijojmë një link të padukshëm për shkarkim
-  const link = document.createElement('a')
-  link.href = 'https://drive.google.com/uc?export=download&id=1wyKZ1BMIks0Rl0pXESMpo6rnIUjBhIMO'
-  link.download = 'Elsa_CV.pdf'
-  link.target = '_blank'
-  
-  // Shtojmë link në dokument, klikojmë dhe pastaj e largojmë
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  
-  // Mbyll menunë mobile nëse është e hapur
   isMobileMenuOpen.value = false
   
-  console.log('Downloading CV...')
+  const cvUrl = 'https://drive.google.com/uc?export=download&id=1wyKZ1BMIks0Rl0pXESMpo6rnIUjBhIMO'
+  const viewUrl = 'https://drive.google.com/file/d/1wyKZ1BMIks0Rl0pXESMpo6rnIUjBhIMO/view'
+  
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+  
+  if (isMobile) {
+    window.open(viewUrl, '_blank')
+  } else {
+    const link = document.createElement('a')
+    link.href = cvUrl
+    link.download = 'Elsa_CV.pdf'
+    link.target = '_blank'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 }
 
 const goToHome = () => {
+  isMobileMenuOpen.value = false
+  
   if (route.path !== '/') {
     router.push('/')
   } else {
@@ -152,6 +161,8 @@ const goToHome = () => {
 }
 
 const navigateToSection = (section) => {
+  isMobileMenuOpen.value = false
+  
   if (route.path.startsWith('/projects/')) {
     router.push('/')
     setTimeout(() => {

@@ -7,7 +7,7 @@
 
     <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
 
-    <div class="container mx-auto px-6 relative z-10">
+    <div class="container mx-auto px-4 sm:px-6 relative z-10">
       <div class="text-center mb-16">
         <div class="inline-flex items-center gap-2 bg-gray-800/50 backdrop-blur-lg border border-gray-700/50 rounded-2xl px-4 py-2 mb-6">
           <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -23,32 +23,34 @@
           </span>
         </h2>
         
-        <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+        <p class="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
           A collection of my recent work showcasing expertise in modern web technologies, 
           innovative solutions, and attention to detail.
         </p>
       </div>
 
-      <div class="flex flex-wrap justify-center gap-4 mb-12">
+      <!-- Categories - Improved for mobile -->
+      <div class="flex flex-wrap justify-center gap-3 mb-12 px-2">
         <button
           v-for="category in categories"
           :key="category.id"
           @click="setActiveCategory(category.id)"
           :class="[
-            'px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 border-2 backdrop-blur-lg',
+            'px-4 py-3 sm:px-6 sm:py-3 rounded-2xl font-semibold text-sm transition-all duration-300 border-2 backdrop-blur-lg flex-1 min-w-[140px] max-w-[180px]',
             activeCategory === category.id
               ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-cyan-400/50 shadow-lg shadow-cyan-500/25 transform -translate-y-1'
               : 'bg-gray-800/30 text-gray-300 border-gray-700/50 hover:border-cyan-400/30 hover:text-cyan-400'
           ]"
         >
-          <span class="flex items-center gap-2">
-            <component :is="category.icon" class="w-4 h-4" />
-            {{ category.name }}
+          <span class="flex items-center justify-center gap-2">
+            <component :is="category.icon" class="w-4 h-4 flex-shrink-0" />
+            <span class="truncate">{{ category.name }}</span>
           </span>
         </button>
       </div>
 
-      <div class="grid lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+      <!-- Projects Grid -->
+      <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
         <div 
           v-for="(project, index) in displayedProjects" 
           :key="project.id"
@@ -161,7 +163,8 @@
               </div>
             </div>
 
-            <div class="flex gap-3">
+            <!-- Action Buttons - Improved for mobile -->
+            <div class="flex flex-col sm:flex-row gap-3">
               <button 
                 v-if="project.githubUrl && project.status === 'public'"
                 @click="visitGitHub(project.githubUrl)"
@@ -201,6 +204,7 @@
         </div>
       </div>
 
+      <!-- No Projects Message -->
       <div 
         v-if="filteredProjects.length === 0" 
         class="text-center py-12"
@@ -216,15 +220,16 @@
         </button>
       </div>
 
+      <!-- Load More / View Less Buttons -->
       <div v-if="filteredProjects.length > 0" class="flex flex-col items-center gap-8">
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
           <button 
             v-if="hasMoreProjects"
             @click="loadMoreProjects"
-            class="group bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105"
+            class="group bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-4 rounded-2xl font-semibold text-base sm:text-lg hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 w-full"
           >
             <span class="flex items-center justify-center gap-3">
-              Load More Projects
+              Load More
               <svg class="w-5 h-5 group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
               </svg>
@@ -234,7 +239,7 @@
           <button 
             v-if="showViewLess"
             @click="viewLessProjects"
-            class="group border-2 border-gray-600 text-gray-300 px-8 py-4 rounded-2xl font-semibold text-lg hover:border-cyan-400 hover:text-cyan-400 transition-all duration-300 backdrop-blur-lg hover:shadow-lg hover:shadow-cyan-500/10"
+            class="group border-2 border-gray-600 text-gray-300 px-6 py-4 rounded-2xl font-semibold text-base sm:text-lg hover:border-cyan-400 hover:text-cyan-400 transition-all duration-300 backdrop-blur-lg hover:shadow-lg hover:shadow-cyan-500/10 w-full"
           >
             <span class="flex items-center justify-center gap-3">
               View Less
@@ -245,12 +250,12 @@
           </button>
 
           <button 
-            v-if="!showAllProjects && filteredProjects.length > projectsPerLoad"
+            v-if="!showAllProjectsFlag && filteredProjects.length > projectsPerLoad"
             @click="showAllProjects"
-            class="group border-2 border-cyan-500 text-cyan-400 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-cyan-500/10 transition-all duration-300 backdrop-blur-lg"
+            class="group border-2 border-cyan-500 text-cyan-400 px-6 py-4 rounded-2xl font-semibold text-base sm:text-lg hover:bg-cyan-500/10 transition-all duration-300 backdrop-blur-lg w-full"
           >
             <span class="flex items-center justify-center gap-3">
-              Show All Projects
+              Show All
               <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>
               </svg>
@@ -260,7 +265,7 @@
 
         <div class="text-center text-gray-400 text-sm">
           Showing {{ displayedProjects.length }} of {{ filteredProjects.length }} projects
-          <span v-if="showAllProjects" class="text-cyan-400 font-semibold"> • All projects visible</span>
+          <span v-if="showAllProjectsFlag" class="text-cyan-400 font-semibold"> • All projects visible</span>
         </div>
       </div>
     </div>
@@ -354,6 +359,12 @@ const setActiveCategory = (categoryId) => {
   activeCategory.value = categoryId
   visibleProjectsCount.value = projectsPerLoad.value
   showAllProjectsFlag.value = false
+  
+  // Scroll to top of projects section for better UX
+  const projectsSection = document.getElementById('projects')
+  if (projectsSection) {
+    projectsSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
 
 const getCategoryName = (categoryId) => {
@@ -420,5 +431,24 @@ onMounted(() => {
 
 .grid > div {
   animation: fadeInUp 0.6s ease-out both;
+}
+
+/* Improved responsive behavior */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Fix for button focus states */
+button:focus {
+  outline: 2px solid rgba(6, 182, 212, 0.5);
+  outline-offset: 2px;
+}
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
 </style>
