@@ -2,195 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== RREGULLIME GLOBALE PËR MOBILE FIXES ===== */
+/* ===== FIX PËR WHITE SPACE BACKGROUND ===== */
 
-/* Reset bazë për parandalimin e overflow */
+/* 1. Siguro që background-i i browser-it të jetë i zi */
 html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden;
-  position: relative;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: #000000 !important; /* Ngjyra e zezë për white space */
 }
 
+/* 2. Siguro që aplikacioni të mbushë të gjithë hapësirën */
 #app {
-  width: 100%;
-  overflow-x: hidden;
-  position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+    position: relative;
 }
 
-/* Parandaloj horizontal scroll */
+/* 3. Parandalon horizontal scroll pa ndikuar në zoom */
 * {
-  box-sizing: border-box;
-  max-width: 100%;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
-/* Fix për Safari iOS */
-@supports (-webkit-touch-callout: none) {
-  body {
-    -webkit-overflow-scrolling: touch;
-    height: -webkit-fill-available;
-  }
-  
-  #app {
-    min-height: -webkit-fill-available;
-  }
-}
-
-/* ===== TOUCH EVENT FIXES ===== */
-/* Parandalo zoom në double tap për iOS */
-* {
-  touch-action: pan-y;
-}
-
-/* Parandalo highlight blue në tap për mobile */
-* {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
-/* Lejo selektim tekstit vetëm ku nevojitet - NUK NDRYSHON STILIN */
-p, h1, h2, h3, h4, h5, h6, span, div, a {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-/* ===== FIX PËR VIEWPORT HEIGHT NË MOBILE ===== */
-/* Siguro që height të jetë consistent pa ndryshuar styling */
-.h-screen {
-  height: 100vh;
-  height: 100dvh;
-}
-
-.min-h-screen {
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
-/* ===== FIX PËR SMOOTH SCROLLING ===== */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Parandalo scroll jerk në mobile */
+/* 4. Fix për mobile - siguron që të gjitha seksionet të kenë background të duhur */
 @media (max-width: 768px) {
-  html {
-    scroll-behavior: auto;
-  }
+    body {
+        background-color: #000000 !important;
+        overflow-x: hidden;
+    }
+    
+    section {
+        background: inherit; /* Merr ngjyrën nga prindi */
+    }
 }
 
-/* ===== FIX PËR IMAGES DË MEDIA ===== */
-/* Siguro që imazhet nuk shkaktojnë overflow */
-img, video, iframe {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* ===== FIX PËR FORM ELEMENTS NË MOBILE ===== */
-input, textarea, select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  border-radius: 0;
-}
-
-/* ===== FIX PËR BUTTON SIZE NË MOBILE ===== */
-/* Përmirëso touch targets pa ndryshuar styling */
-@media (max-width: 768px) {
-  button, a[role="button"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
-/* ===== FIX PËR MODAL SCROLL LOCK ===== */
-/* Parandalo scroll kur modal është open */
-body.modal-open {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-}
-
-/* ===== FIX PËR FLEXBOX GAPS NË MOBILE ===== */
-/* Siguro që flexbox të funksionojë mirë në mobile */
-.flex-wrap {
-  margin: -0.25rem;
-}
-
-.flex-wrap > * {
-  margin: 0.25rem;
-}
-
-/* ===== CUSTOM SCROLLBAR (OPTIONAL) ===== */
-/* Ndryshon vetëm scrollbar, jo stilin e përmbajtjes */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(6, 182, 212, 0.3);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.5);
-}
-
-/* ===== PERFORMANCE OPTIMIZATIONS ===== */
-/* Vetëm për mobile performance */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* ===== FIX PËR CONTAINER WIDTH ===== */
-/* Siguro që container të mos shkaktojë overflow */
+/* 5. Siguron që container të mos lë hapësirë të bardhë */
 .container {
-  width: 100%;
-  max-width: 100%;
-}
-
-/* ===== MOBILE SPECIFIC PADDING FIX ===== */
-/* Optimizo padding për mobile pa ndryshuar design */
-@media (max-width: 640px) {
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
-/* ===== FIX PËR STICKY ELEMENTS NË iOS ===== */
-.sticky {
-  position: -webkit-sticky;
-  position: sticky;
-}
-
-/* ===== UTILITY CLASSES PËR FIXES ===== */
-/* Klassen për të fshehur scrollbar nëse nevojitet */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Klasa për të parandaluar text selection ku nuk duhet */
-.no-select {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    width: 100%;
+    overflow-x: hidden;
 }
