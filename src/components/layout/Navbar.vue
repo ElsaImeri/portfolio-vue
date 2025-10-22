@@ -63,7 +63,7 @@
           </button>
 
           <button class="lg:hidden p-3 rounded-xl bg-gray-800/50 border border-gray-700/50 text-gray-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all duration-300"
-                  @click="isMobileMenuOpen = !isMobileMenuOpen">
+                  @click="toggleMobileMenu">
             <div class="w-6 h-6 relative">
               <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-5 h-0.5 bg-current transition-all duration-300"
                     :class="{ 'rotate-45 translate-y-0': isMobileMenuOpen, '-translate-y-1.5': !isMobileMenuOpen }"></span>
@@ -76,6 +76,7 @@
         </div>
       </div>
 
+      <!-- Mobile Menu -->
       <div class="lg:hidden overflow-hidden transition-all duration-500"
            :class="{ 'max-h-0': !isMobileMenuOpen, 'max-h-96 py-4': isMobileMenuOpen }">
         <div class="bg-gray-800/95 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-4 mt-4">
@@ -110,7 +111,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
@@ -124,9 +125,23 @@ const scrolled = ref(false)
 const isMobileMenuOpen = ref(false)
 const activeSection = ref('home')
 
-watch(() => route.path, () => {
+// Rregullo problemin e sinkronizimit të menusë mobile
+watch(() => route.path, (newPath, oldPath) => {
+  // Mbylle menunë mobile kur rruga ndryshon
+  if (newPath !== oldPath) {
+    isMobileMenuOpen.value = false
+  }
+})
+
+// Shiko gjithashtu ndryshimet në parametrat e query
+watch(() => route.query, () => {
   isMobileMenuOpen.value = false
 })
+
+// Funksion për të kontrolluar menunë mobile
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
 
 const downloadCV = () => {
   isMobileMenuOpen.value = false
@@ -160,25 +175,33 @@ const goToHome = () => {
   }
 }
 
-const navigateToSection = (section) => {
+const navigateToSection = async (section) => {
+  // Mbylle menunë mobile para navigimit
   isMobileMenuOpen.value = false
   
+  // Nëse jemi në një faqe projekti, kthehu në faqen kryesore fillestare
   if (route.path.startsWith('/projects/')) {
-    router.push('/')
-    setTimeout(() => {
-      scrollToSection(section)
-    }, 100)
-  } else {
-    scrollToSection(section)
+    await router.push('/')
+    // Prit deri të përditësohet DOM-i
+    await nextTick()
   }
+  
+  // Scrollo në seksionin e dëshiruar
+  scrollToSection(section)
 }
 
 const scrollToSection = (sectionId) => {
-  const element = document.getElementById(sectionId)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-    setActiveSection(sectionId)
-  }
+  // Shto një vonesë të vogël për të siguruar që DOM-i është përditësuar
+  setTimeout(() => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+      setActiveSection(sectionId)
+    }
+  }, 100)
 }
 
 const setActiveSection = (section) => {
@@ -188,6 +211,7 @@ const setActiveSection = (section) => {
 const handleScroll = () => {
   scrolled.value = window.scrollY > 50
   
+  // Përditëso seksionin aktiv vetëm nëse jemi në faqen kryesore
   if (route.path === '/') {
     const sections = props.navigation.map(item => item.name.toLowerCase())
     
@@ -197,6 +221,7 @@ const handleScroll = () => {
       const element = document.getElementById(section)
       if (element) {
         const rect = element.getBoundingClientRect()
+        // Kontrollo nëse elementi është i dukshëm në viewport
         if (rect.top <= 100 && rect.bottom >= 100) {
           currentSection = section
         }
@@ -207,12 +232,22 @@ const handleScroll = () => {
   }
 }
 
+// Shto listener për klikime jashtë menuse mobile për ta mbyllur atë
+const handleClickOutside = (event) => {
+  const nav = document.querySelector('nav')
+  if (nav && !nav.contains(event.target) && isMobileMenuOpen.value) {
+    isMobileMenuOpen.value = false
+  }
+}
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  document.addEventListener('click', handleClickOutside)
   handleScroll()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
